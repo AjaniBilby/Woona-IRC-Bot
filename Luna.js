@@ -13,13 +13,11 @@ var config = {
 	server: "irc.canternet.org",
 	botName: "Woona-Bot",
 	canSend: true,
-	humanDelay: 100
+	humanDelay: 50,
+	loadSaves: ["basicLuna"]
 };
 
-var memory = [
-	{action: [config.botName.toLowerCase()], reaction: ["Say my name! say my name! say my name", "Don't ware is out", "Yes?", "Yes?", "Yes dear?"]},
-	{action: [config.botName.toLowerCase(),"boop"], reaction: ["You Shall Not Touch Me Welp!",]},
-];
+var memory = [];
 
 // Create the bot name
 var bot = new irc.Client(config.server, config.botName, {
@@ -320,4 +318,8 @@ function LoadData(fileName){
 			memory.push(obj[i]);
 		}
 	};
+};
+
+for (i=0; i<config.loadSaves.length; i++){
+	LoadData(config.loadSaves[i]);
 };
