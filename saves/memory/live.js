@@ -1,1 +1,0 @@
-[{"action": ["woona-bot"], "reaction": ["Say my name! say my name! say my name", "Don't ware is out", "Yes?", "Yes?", "Yes dear?"]}, {"action": ["woona-bot", "boop"], "reaction": ["You Shall Not Touch Me Welp!"]}]
