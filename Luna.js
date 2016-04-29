@@ -6,24 +6,35 @@ function rand(floor, ceil){
 	return Math.floor( (Math.random() * (ceil-floor)) +floor);
 };
 
+function IsValid(input){
+	if (input == undefined || input == "" || input == " "){
+		return false;
+	}else{
+		return true;
+	}
+};
+
 // Create the configuration
 var config = {
-	owner: ["Hobgoblin101"],
+	owner: ["Hobgoblin101", "Surreal_Nightmares"],
 	channels: ["#botTest", "#luna'sBedRoom"],
 	server: "irc.canternet.org",
 	botName: "Woona-Bot",
 	canSend: true,
-	humanDelay: 50,
-	loadSaves: ["basicLuna"]
+	humanDelay: 0,
+	loadSaves: ["basicLuna"],
+	quitMessage: "I must go to the dream scape"
 };
 
 var memory = [];
+var userList = {};
 
 // Create the bot name
 var bot = new irc.Client(config.server, config.botName, {
 	channels: config.channels
 });
 
+/**Pipe out IRC errors**/
 bot.addListener('error', function(message) {
     console.log('error: ', message);
 });
@@ -31,10 +42,30 @@ bot.addListener('error', function(message) {
 /**Listen for joins**/
 bot.addListener("join", function(channel, who) {
 	// Welcome them in!
-	if (who != config.botName){
-		//Don't welcome yourself
-		bot.say(channel, "Welcome come "+ who +" into our presence");
+	if (who == config.botName){
+		//When it's self join
+		for (i=0; i<config.owner.length; i++){
+			bot.say(config.owner[i], config.botName + " has connected to channels " + channel);
+		}
 	}
+});
+
+/**On connect**/
+bot.addListener("connect", function(){
+	console.log(config.botName + " has connected");
+	for (i=0; i<config.owner.length; i++){
+		bot.say(config.owner[i], config.botName + " has connected to channels " + config.channels);
+	}
+});
+
+/**On disconnect**/
+bot.addListener("disconnect", function(){
+	console.log(config.botName + " has lost connection");
+});
+
+/**Update user list**/
+bot.addListener("names", function(channel, nicks){
+	userList[channel] = nicks;
 });
 
 /**On action**/
@@ -42,7 +73,8 @@ bot.addListener("action", function(from, channel, message){
 	console.log('('+channel+')'+from+': '+message);
 	var itext = message.toLowerCase();
 	if (itext.indexOf(config.botName.toLowerCase()) != -1){
-		Message(channel, "Stop Playing With Me!");
+		message = '*' + message + '*'
+		Message(channel, GenerateReply(message, from), "message");
 	}
 });
 
@@ -88,7 +120,10 @@ bot.addListener("message", function(from, to, text, message) {
 		else if (itext.indexOf("luna-die") != -1){
 			arguments = text.split(" ");
 			arguments.splice(0, 1); //Remove the message to allow bot to find
-			bot.send('QUIT', arguments[1]);
+			if (IsValid(arguments[1])){
+				arguments[1] = config.quitMessage;
+			}
+			bot.disconnect(arguments[1]);
 			return;
 		}
 		else if (itext.indexOf("luna-newadmin") != -1 && from == config.owner[0]){
@@ -135,6 +170,9 @@ bot.addListener("message", function(from, to, text, message) {
 			bot.send('JOIN', arguments[1]);
 			return;
 		}
+		else if (itext.indexOf("luna-users") != -1 && IsAdmin(from)){
+			bot.say(to, to + " List: " + userList.to);
+		}
 		else if (itext.indexOf("luna-say") != -1){
 			arguments = text.split(" ");
 			to = arguments[1];
@@ -168,7 +206,7 @@ bot.addListener("message", function(from, to, text, message) {
 
 function Message(to, message, type){
 	//Cancel Message
-	if (message == "" || message == " " || message == undefined || config.canSend != true){
+	if (IsValid(message) == false && config.canSend != true){
 		//Cancel the message if a requirement is not met
 		if(config.canSend != true){
 			console.log("message cancelled: not allowed to talk")
@@ -179,12 +217,15 @@ function Message(to, message, type){
 	}
 
 	//Set defult
-	if (type == undefined){
+	if (IsValid(type) == false){
 		type = "message";
 	}
 
 	//Calculate human delay factor
-	var delay = message.length * config.humanDelay;
+	if (config.humanDelay == 0 || config.humanDelay == 1){
+	}else{
+		var delay = message.length * config.humanDelay;
+	}
 
 	if (type == "message"){
 		setTimeout(function(){ bot.say(to, message); console.log('Me: '+ message); }, delay);
@@ -204,8 +245,7 @@ function IsAdmin(person){
 };
 
 function GenerateReply(input, from){
-	console.log("startingReply: " + input)
-	if (input == undefined){
+	if (IsValid(input) == false){
 		console.log("broken input")
 		return;
 	}
@@ -220,6 +260,10 @@ function GenerateReply(input, from){
 		for (var comp=0; comp < memory[item].action.length; comp++){
 			test = memory[item].action[comp];
 			test = test.toLowerCase();
+			while (reply.indexOf(config.botName) != -1){
+				reply = reply.replace(config.botName, "%botname%");
+				console.log(reply)
+			}
 			if (itext.indexOf(test) == -1 && validOpt == true){
 				//If an option does not exist set validOpt to false
 				validOpt = false;
@@ -249,10 +293,50 @@ function GenerateReply(input, from){
 
 	num = rand(0, best.length);
 	reply = best[num];
-	if (reply == "null"){
+	if (reply == "null" || reply == undefined || reply == "" || reply == " "){
 		return;
 	};
+
+	//Convert symbols to variable
+	while (reply.indexOf("%name%") != -1){
+		reply = reply.replace("%name%", from);
+	}
+
 	return reply;
+};
+
+function AddResponse(data){
+	data.split("|RESPONSE|");
+	data[0].split("|NEW|");
+	data[1].split("|NEW|");
+	obj = {action: data[0], response: data[1]};
+	AddMemory(obj);
+};
+
+function AddMemory(obj){
+	//For each action in the object loaded
+	for (i=0; i<obj.length; i++){
+		var foundAct = false;
+		//Loop though each action in the existing memory
+		for (m=0; m<memory.length; m++){
+			//If they are the same action then add the object's reaction the the memory's
+			if (memory[m].action == obj[i].action){
+				for (r=0; r<obj[i].reaction.length; r++){
+					var index = memory[m].reaction.indexOf(obj[i].reaction[r]);
+					if (index == -1){ //If it doesn't exist then add it
+						memory[m].reaction.push(obj[i].reaction[r]);
+					}
+				}
+				//Then since this memory found the corrent action stop checking for that action and move to the next
+				foundAct = true;
+				break;
+			}
+		}
+		//If it could not find the correct action in memory add action to memory
+		if (foundAct == false){
+			memory.push(obj[i]);
+		}
+	};
 };
 
 
@@ -302,31 +386,11 @@ function LoadData(fileName){
   var obj = JSON.parse(fs.readFileSync(dir, 'utf8'));
   console.log("File was loaded");
 
-	//For each action in the object loaded
-	for (i=0; i<obj.length; i++){
-		var foundAct = false;
-		//Loop though each action in the existing memory
-		for (m=0; m<memory.length; m++){
-			//If they are the same action then add the object's reaction the the memory's
-			if (memory[m].action == obj[i].action){
-				for (r=0; r<obj[i].reaction.length; r++){
-					var index = memory[m].reaction.indexOf(obj[i].reaction[r]);
-					if (index == -1){ //If it doesn't exist then add it
-						memory[m].reaction.push(obj[i].reaction[r]);
-					}
-				}
-				//Then since this memory found the corrent action stop checking for that action and move to the next
-				foundAct = true;
-				break;
-			}
-		}
-		//If it could not find the correct action in memory add action to memory
-		if (foundAct == false){
-			memory.push(obj[i]);
-		}
-	};
+	AddMemory(obj);
 };
 
+
+/**On Finnish Loading**/
 for (i=0; i<config.loadSaves.length; i++){
 	console.log("Loading: " + config.loadSaves[i]);
 	LoadData(config.loadSaves[i]);
