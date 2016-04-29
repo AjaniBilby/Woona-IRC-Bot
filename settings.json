@@ -1,0 +1,10 @@
+{
+	"owner": ["Hobgoblin101", "omutant"],
+	"channels": ["#botTest", "#luna'sBedRoom"],
+	"server": "irc.freenode.net",
+	"botName": "Woona-Bot",
+	"canSend": true,
+	"humanDelay": 0,
+	"loadSaves": ["basicLuna"],
+	"quitMessage": "I must go to the dream scape"
+}
