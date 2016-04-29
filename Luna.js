@@ -160,53 +160,9 @@ bot.addListener("message", function(from, to, text, message) {
 	}
 
   /**Public chat**/
-	reply = "null"
 	if (to.indexOf('#') != -1){ //If PM ignore
-		console.log("startingReply")
-		var opts = [];
-		var highestRank = 0;
-		//For each know action loop though and work out components
-		for (var item=0; item < memory.length; item++){
-			validOpt = true;
-			//Loop though components to see if they are in chat message
-			for (var comp=0; comp < memory[item].action.length; comp++){
-				test = memory[item].action[comp];
-				test = test.toLowerCase();
-				if (itext.indexOf(test) == -1 && validOpt == true){
-					//If an option does not exist set validOpt to false
-					validOpt = false;
-				}
-			}
-			//If all needs are met for response
-			if (validOpt == true){
-				//add to list
-				num = rand(0, memory[item].reaction.length);
-				reactChosen = memory[item].reaction[num]
-				newPos = {rank: memory[item].action.length, value: reactChosen};
-				opts.push(newPos);
-
-				//Level up make number of components used in a possible result
-				if (memory[item].action.length >= highestRank){
-					highestRank = memory[item].action.length;
-				}
-			}
-		}
-
-		var best = [];
-		for (i=0; i<opts.length; i++){
-			if (opts[i].rank >= highestRank){
-				best.push(opts[i].value);
-			}
-		}
-
-		num = rand(0, best.length);
-		reply = best[num];
-		if (reply == "null"){
-			return;
-		};
-		Message(to, reply, "message");
-
-	};
+		Message(to, GenerateReply(text, from), "message");
+	}
 
 });
 
@@ -247,6 +203,57 @@ function IsAdmin(person){
 	return (config.owner.indexOf(person) != -1);
 };
 
+function GenerateReply(input, from){
+	console.log("startingReply: " + input)
+	if (input == undefined){
+		console.log("broken input")
+		return;
+	}
+	var itext = input.toLowerCase();
+	reply = "null"
+	var opts = [];
+	var highestRank = 0;
+	//For each know action loop though and work out components
+	for (var item=0; item < memory.length; item++){
+		validOpt = true;
+		//Loop though components to see if they are in chat message
+		for (var comp=0; comp < memory[item].action.length; comp++){
+			test = memory[item].action[comp];
+			test = test.toLowerCase();
+			if (itext.indexOf(test) == -1 && validOpt == true){
+				//If an option does not exist set validOpt to false
+				validOpt = false;
+			}
+		}
+		//If all needs are met for response
+		if (validOpt == true){
+			//add to list
+			num = rand(0, memory[item].reaction.length);
+			reactChosen = memory[item].reaction[num]
+			newPos = {rank: memory[item].action.length, value: reactChosen};
+			opts.push(newPos);
+
+			//Level up make number of components used in a possible result
+			if (memory[item].action.length >= highestRank){
+				highestRank = memory[item].action.length;
+			}
+		}
+	}
+
+	var best = [];
+	for (i=0; i<opts.length; i++){
+		if (opts[i].rank >= highestRank){
+			best.push(opts[i].value);
+		}
+	}
+
+	num = rand(0, best.length);
+	reply = best[num];
+	if (reply == "null"){
+		return;
+	};
+	return reply;
+};
 
 
 /**File system functions**/
@@ -321,5 +328,6 @@ function LoadData(fileName){
 };
 
 for (i=0; i<config.loadSaves.length; i++){
+	console.log("Loading: " + config.loadSaves[i]);
 	LoadData(config.loadSaves[i]);
 };

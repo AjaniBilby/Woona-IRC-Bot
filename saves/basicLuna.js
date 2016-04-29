@@ -2,7 +2,7 @@
   {"action": ["hello"], "reaction": ["What a boring way to start a conversation", "Good day *bows head slightly*"]},
   {"action": ["woona-bot"], "reaction": ["Do you Have a problem you need helping with?", "Don't ware is out", "Yes?", "Yes?", "Yes dear?"]},
   {"action": ["woona-bot", "boop"], "reaction": ["You Shall Not Touch Me Welp!", "What is your problem", "*slaps you*", "Do it again, some place... special. *winks*"]},
-  {"action": ["woona-bot", "fuck off"], "reaction": ["What would you say? *frowns hevelly and stairs at you*"]},
+  {"action": ["woona-bot", "fuck off"], "reaction": ["What did you say? *frowns hevelly and stairs at you*"]},
   {"action": ["woona-bot", "no"], "reaction": ["Okay", "Are you sure?", "Why?", "Fine"]},
   {"action": ["woona-bot", "your", "source"], "reaction": ["What is the magic word?"]},
   {"action": ["woona-bot", "your", "source", "please"], "reaction": ["here you are, my source code: https://github.com/Hobgoblin101/Woona-IRC-Bot"]},
