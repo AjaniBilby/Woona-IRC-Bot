@@ -1,5 +1,5 @@
 [
-  {"action": ["dreamy"]. "reaction": ["Senpai! where!", "I wish senpai was here"]},
+  {"action": ["dreamy"], "reaction": ["Senpai! where!", "I wish senpai was here"]},
   {"action": ["what", "name", "is", "my"], "reaction": ["Your name is %name%"]},
   {"action": ["hello"], "reaction": ["What a boring way to start a conversation", "Good day *bows head slightly*"]},
   {"action": ["%botname%"], "reaction": ["Do you Have a problem you need helping with?", "Don't ware is out", "Yes?", "Yes?", "Yes dear?"]},
