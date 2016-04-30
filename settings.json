@@ -1,10 +1,10 @@
 {
-	"owner": ["Hobgoblin101", "omutant", "surreal_Nightmares"],
+	"owner": ["Hobgoblin101"],
 	"channels": ["#botTest", "#luna'sBedRoom"],
 	"server": "irc.canternet.org",
-	"botName": "Woona-Bot",
+	"botName": "WoonaBot",
 	"canSend": true,
 	"humanDelay": 0,
-	"loadSaves": ["basicLuna"],
+	"loadSaves": [],
 	"quitMessage": "I must go to the dream scape"
 }

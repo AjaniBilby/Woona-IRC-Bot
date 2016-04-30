@@ -30,7 +30,8 @@ var bot = new irc.Client(config.server, config.botName, {
 
 /**Pipe out IRC errors**/
 bot.addListener('error', function(message) {
-    console.log('error: ', message);
+	var string = message.args[2] + "- " + message.args[1];
+  console.log('error: ', string);
 });
 
 /**Listen for joins**/
@@ -41,14 +42,6 @@ bot.addListener("join", function(channel, who) {
 		for (i=0; i<config.owner.length; i++){
 			bot.say(config.owner[i], config.botName + " has connected to channels " + channel);
 		}
-	}
-});
-
-/**On connect**/
-bot.addListener("connect", function(){
-	console.log(config.botName + " has connected");
-	for (i=0; i<config.owner.length; i++){
-		bot.say(config.owner[i], config.botName + " has connected to channels " + config.channels);
 	}
 });
 
@@ -72,11 +65,6 @@ bot.addListener("action", function(from, channel, message){
 	}
 });
 
-/**On PM**/
-bot.addListener("pm", function(from, text, message){
-	console.log('(PM)'+from+': '+text);
-});
-
 /**On Standard Message**/
 bot.addListener("message", function(from, to, text, message) {
   console.error('('+ to + ')' + from + ': ' + text);
@@ -84,7 +72,7 @@ bot.addListener("message", function(from, to, text, message) {
 
 	/**Commands**/
 	if (itext.indexOf("!") != -1 && IsAdmin(from)){ //If it is possibly a command
-		if (itext.indexOf("luna-save") != -1 && from == config.owner[0]){
+		if (itext.indexOf(config.botName.toLowerCase()+"-save") != -1 && from == config.owner[0]){
 			arguments = text.split(" ");
 			if (arguments[1] != undefined){
 				var fileDir = arguments[1];
@@ -94,7 +82,7 @@ bot.addListener("message", function(from, to, text, message) {
 			SaveData(fileDir);
 			return;
 		}
-		else if (itext.indexOf("luna-load") != -1 && from == config.owner[0]){
+		else if (itext.indexOf(config.botName.toLowerCase()+"-load") != -1 && from == config.owner[0]){
 			arguments = text.split(" ");
 			if (arguments[1] != undefined){
 				var fileDir = arguments[1];
@@ -105,13 +93,13 @@ bot.addListener("message", function(from, to, text, message) {
 			Message(to, "Loaded: " + fileDir);
 			return;
 		}
-		else if (itext.indexOf("luna-command") != -1){
+		else if (itext.indexOf(config.botName.toLowerCase()+"-command") != -1){
 			arguments = text.split(" ");
 			arguments.splice(0, 1); //Remove the message to allow bot to find
 			message(to, arguments, "action");
 			return;
 		}
-		else if (itext.indexOf("luna-die") != -1){
+		else if (itext.indexOf(config.botName.toLowerCase()+"-die") != -1){
 			arguments = text.split(" ");
 			arguments.splice(0, 1); //Remove the message to allow bot to find
 			if (IsValid(arguments[1])){
@@ -120,7 +108,7 @@ bot.addListener("message", function(from, to, text, message) {
 			bot.disconnect(arguments[1]);
 			return;
 		}
-		else if (itext.indexOf("luna-newadmin") != -1 && from == config.owner[0]){
+		else if (itext.indexOf(config.botName.toLowerCase()+"-newadmin") != -1 && from == config.owner[0]){
 			arguments = text.split(" ");
 			arguments.splice(0, 1); //Remove the message to allow bot to find
 			index = config.owner.indexOf(arguments[0]);
@@ -130,7 +118,7 @@ bot.addListener("message", function(from, to, text, message) {
 			}
 			return;
 		}
-		else if (itext.indexOf("luna-removeadmin") != -1 && from == config.owner[0]){ //Is Main Admin
+		else if (itext.indexOf(config.botName.toLowerCase()+"-removeadmin") != -1 && from == config.owner[0]){ //Is Main Admin
 			arguments = text.split(" ");
 			arguments.splice(0, 1); //Remove the message to allow bot to find
 			index = config.owner.indexOf(arguments[0]);
@@ -140,34 +128,34 @@ bot.addListener("message", function(from, to, text, message) {
 			}
 			return;
 		}
-		else if (itext.indexOf("luna-canrespond") != -1){
+		else if (itext.indexOf(config.botName.toLowerCase()+"-canrespond") != -1){
 			arguments = text.split(" ");
 			arguments.splice(0, 1); //Remove the message to allow bot to find
 			config.canSend = arguments[0];
 			console.log("canSend has been set to: " + config.canSend);
 			return;
 		}
-		else if (itext.indexOf("luna-setdelay") != -1){
+		else if (itext.indexOf(config.botName.toLowerCase()+"-setdelay") != -1){
 			arguments = text.split(" ");
 			arguments.splice(0, 1); //Remove the message to allow bot to find
 			config.humanDelay = arguments[0];
 			console.log("Human delay set to: " + config.humanDelay);
 			return;
 		}
-		else if (itext.indexOf("luna-part") != -1){
+		else if (itext.indexOf(config.botName.toLowerCase()+"-part") != -1){
 			arguments = text.split(" ");
 			bot.send('PART', arguments[1]);
 			return;
 		}
-		else if (itext.indexOf("luna-join") != -1){
+		else if (itext.indexOf(config.botName.toLowerCase()+"-join") != -1){
 			arguments = text.split(" ");
 			bot.send('JOIN', arguments[1]);
 			return;
 		}
-		else if (itext.indexOf("luna-users") != -1 && IsAdmin(from)){
+		else if (itext.indexOf(config.botName.toLowerCase()+"-users") != -1 && IsAdmin(from)){
 			bot.say(to, to + " List: " + userList.to);
 		}
-		else if (itext.indexOf("luna-say") != -1){
+		else if (itext.indexOf(config.botName.toLowerCase()+"-say") != -1){
 			arguments = text.split(" ");
 			to = arguments[1];
 			arguments.splice(0, 1);
@@ -177,9 +165,14 @@ bot.addListener("message", function(from, to, text, message) {
 			console.log('Said: ' + message + " | To: " + to);
 			return;
 		}
-		else if (itext.indexOf("luna-help") != -1){
-			bot.say(to, "luna-load           - load save file [name]");
+		else if (itext.indexOf((config.botName.toLowerCase()+"-help")) != -1){
+			bot.say(to, "Only Primary can use:");
 			bot.say(to, "luna-save           - save a save file [name]");
+			bot.say(to, "luna-load           - load save file [name]");
+			bot.say(to, "luna-newadmin       - save a save file [name]");
+			bot.say(to, "luna-removeadmin    - save a save file [name]");
+			bot.say(to, "");
+			bot.say(to, "Admins can use:");
 			bot.say(to, "luna-command        - gets Woona-Bot to run a specified command - [command argument1 argument 2]");
 			bot.say(to, "luna-die            - shuts down Woona-Bot");
 			bot.say(to, "luna-canRespond     - turns off or on Woona-Bot's auto response [true/false]");
@@ -189,10 +182,7 @@ bot.addListener("message", function(from, to, text, message) {
 			bot.say(to, "luna-say            - get's Woona-Bot to say something for you [#channel/nick message]");
 			bot.say(to, "luna-help           - get's Woona-Bot to tell you a list of her commands");
 		}
-	}
-
-  /**Public chat**/
-	if (to.indexOf('#') != -1){ //If PM ignore
+	}else{
 		Message(to, GenerateReply(text, from), "message");
 	}
 
@@ -222,7 +212,7 @@ function Message(to, message, type){
 	}
 
 	if (type == "message"){
-		setTimeout(function(){ bot.say(to, message); console.log('Me: '+ message); }, delay);
+		setTimeout(function(){ bot.say(to, message); console.log('('+ to + ')Me: '+ message); }, delay);
 	}else if (type == "action"){
 		command = message[0];
 		arguments = message;
@@ -245,10 +235,8 @@ function GenerateReply(input, from){
 	}
 	var itext = input.toLowerCase();
 
-	console.log("before: " + itext);
 	while (itext.indexOf(config.botName.toLowerCase()) != -1){
 		itext = itext.replace(config.botName.toLowerCase(), "%botname%");
-		console.log("after: " + itext);
 	}
 
 	reply = "null"
@@ -269,10 +257,16 @@ function GenerateReply(input, from){
 		//If all needs are met for response
 		if (validOpt == true){
 			//add to list
-			num = rand(0, memory[item].reaction.length);
-			reactChosen = memory[item].reaction[num]
-			newPos = {rank: memory[item].action.length, value: reactChosen};
-			opts.push(newPos);
+			if (IsValid(memory[item].reaction)){
+				console.log("content: " + memory[item].reaction);
+				console.log("length: " + memory[item].reaction.length);
+				num = rand(0, memory[item].reaction.length);
+				reactChosen = memory[item].reaction[num]
+				newPos = {rank: memory[item].action.length, value: reactChosen};
+				opts.push(newPos);
+			}else{
+				console.log("invaild:"+memory[item].reaction)
+			}
 
 			//Level up make number of components used in a possible result
 			if (memory[item].action.length >= highestRank){
@@ -298,8 +292,6 @@ function GenerateReply(input, from){
 	while (reply.indexOf("%name%") != -1){
 		reply = reply.replace("%name%", from);
 	}
-
-	console.log("output");
 
 	return reply;
 };
@@ -382,14 +374,6 @@ function SaveData(fileName){
 
 function LoadData(fileName){
   dir = "./saves/memory/" + fileName + '.json';
-	fs.stat(dir, function(err, stat) {
-    if(err == null) {
-
-    }else{
-			console.log("File no exist: " + dir);
-		}
-	});
-
 	var fileExists = true;
 	var obj = JSON.parse(fs.readFileSync(dir, 'utf8'));
 	console.log("File was loaded");
