@@ -1,7 +1,7 @@
 {
-	"owner": ["Hobgoblin101", "omutant"],
+	"owner": ["Hobgoblin101", "omutant", "surreal_Nightmares"],
 	"channels": ["#botTest", "#luna'sBedRoom"],
-	"server": "irc.freenode.net",
+	"server": "irc.canternet.org",
 	"botName": "Woona-Bot",
 	"canSend": true,
 	"humanDelay": 0,

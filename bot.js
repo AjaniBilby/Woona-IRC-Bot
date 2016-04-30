@@ -20,6 +20,7 @@ console.log("Loaded Settings");
 
 
 var memory = [];
+
 var userList = {};
 
 // Create the bot name
@@ -244,8 +245,10 @@ function GenerateReply(input, from){
 	}
 	var itext = input.toLowerCase();
 
+	console.log("before: " + itext);
 	while (itext.indexOf(config.botName.toLowerCase()) != -1){
 		itext = itext.replace(config.botName.toLowerCase(), "%botname%");
+		console.log("after: " + itext);
 	}
 
 	reply = "null"
@@ -295,6 +298,8 @@ function GenerateReply(input, from){
 	while (reply.indexOf("%name%") != -1){
 		reply = reply.replace("%name%", from);
 	}
+
+	console.log("output");
 
 	return reply;
 };
@@ -377,24 +382,18 @@ function SaveData(fileName){
 
 function LoadData(fileName){
   dir = "./saves/memory/" + fileName + '.json';
-
-	var fileExists = false;
-
 	fs.stat(dir, function(err, stat) {
-    if(err != null) {
-			console.log("File no exist: " + dir)
-      fileExists = false;
+    if(err == null) {
+
     }else{
-			fileExists = true;
+			console.log("File no exist: " + dir);
 		}
 	});
 
-	if (fileExists == false){
-		return;
-	}else{
-		var obj = JSON.parse(fs.readFileSync(dir, 'utf8'));
-		console.log("File was loaded");
-
+	var fileExists = true;
+	var obj = JSON.parse(fs.readFileSync(dir, 'utf8'));
+	console.log("File was loaded");
+	if (obj != undefined){
 		AddMemory(obj);
 	}
 };
