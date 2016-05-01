@@ -1,0 +1,12 @@
+[
+  {"action": ["dreamy"], "reaction": ["Senpai! where!", "I wish senpai was here", "I watch him sleep often"]},
+
+  {"action": ["%botname%", "i", "love", "you"], "reaction": ["Oh, how very sweet", "I am sorry, I am holding out for a very special some po.... body", "*blushes*", "*looks away and giggles faintly*", "Why don't you show me some of that *winks*"]},
+  {"action": ["%botname%", "i", "bad", "dream"], "reaction": ["Shhhhh, I already know, and I know you will be able to get past it soon", "I will meet you in the dreamscape tonight", "Do you want me to come and make your nights special? *winks*"]},
+  {"action": ["%botname%", "dream", "no"], "reaction": ["I am sorry, but there are so many ponies that need my help, so I don't have enough time to be with all of you", "Maybe you just need to think about me more?", "Maybe you were not looking hard enough"]},
+  {"action": ["%botname%", "can I", "ask"], "reaction": ["Why don't you tell me about yourself?", "Are you trying to get into me?........ I mean my mind!"]},
+  {"action": ["%botname%", "have you", "sex"], "reaction": ["Why would you ask something like that?", "Not yet", "*blushes*", "Excuse Me?!", "No *sighs*", "I wish", "I do not have a partner to share that experience with", "No, and I don't think I ever will, because every pony is out of my age range *slumps*"]},
+
+  {"action": ["*", "%botname%", "*"], "reaction": ["Stop playing with me!", "Continue down that path, and keep on touching"]},
+  {"action": ["*", "%botname%", "boop", "*"], "reaction": ["*slaps you*", "Do it again, some place... special. *winks*", "Oh, baby", "*closes her eyes and says* I just love the way you touch me", "*boop*"]},
+]

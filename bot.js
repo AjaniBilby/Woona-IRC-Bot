@@ -60,8 +60,10 @@ bot.addListener("action", function(from, channel, message){
 	console.log('('+channel+')'+from+': '+message);
 	var itext = message.toLowerCase();
 	if (itext.indexOf(config.botName.toLowerCase()) != -1){
-		message = '*' + message + '*'
-		Message(channel, GenerateReply(message, from), "message");
+		message = '*' + from + ' ' + message + '*';
+		console.log(message);
+		var reply = GenerateReply(message, from);
+		Message(channel, reply, "message");
 	}
 });
 

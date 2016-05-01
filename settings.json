@@ -5,6 +5,6 @@
 	"botName": "WoonaBot",
 	"canSend": true,
 	"humanDelay": 0,
-	"loadSaves": [],
+	"loadSaves": ["basic"],
 	"quitMessage": "I must go to the dream scape"
 }
